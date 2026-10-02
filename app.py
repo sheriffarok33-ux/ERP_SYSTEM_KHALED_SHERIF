@@ -3,6 +3,7 @@ import streamlit as st
 from translations import t
 from modules.dashboard import show_dashboard
 from modules.companies import show_companies
+from modules.ask_ai import show_ask_ai
 from ui.navigation import show_navigation
 from core.database import initialize_database, database_health_check
 
@@ -170,6 +171,10 @@ else:
     elif selected_page == "companies_branches":
 
         show_companies(language)
+
+    elif selected_page == "ask_ai":
+
+        show_ask_ai(language)
 
     else:
 

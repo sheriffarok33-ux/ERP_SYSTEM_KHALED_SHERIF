@@ -2,52 +2,60 @@ import streamlit as st
 from translations import t
 
 
-def _go_to(page_key):
-    """
-    Store the requested page so navigation.py can consume it.
-    """
+def _request_page(page_key):
     st.session_state["requested_page"] = page_key
-    st.rerun()
 
 
-def _module_button(label, icon, page_key, key):
-    """
-    Dashboard module button.
-    """
-    if st.button(
+def _card(label, icon, page_key, key):
+    st.button(
         f"{icon}  {label}",
         key=key,
-        use_container_width=True
-    ):
-        _go_to(page_key)
+        use_container_width=True,
+        on_click=_request_page,
+        args=(page_key,)
+    )
 
 
 def show_dashboard(language):
+    ar = language == "العربية"
 
     st.title(t("system_name", language))
     st.success(t("login_success", language))
     st.subheader(t("dashboard", language))
 
-    # Center the text/icons inside all dashboard buttons.
+    # Dashboard card styling: true center horizontally + vertically.
     st.markdown(
         """
         <style>
-        div[data-testid="stButton"] > button {
-            min-height: 84px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 20px;
-            font-weight: 600;
-            border-radius: 12px;
-            white-space: normal;
+        div[data-testid="stButton"] {
+            width: 100%;
         }
 
-        div[data-testid="stButton"] > button p {
-            width: 100%;
-            text-align: center;
-            margin: 0;
+        div[data-testid="stButton"] > button,
+        button[data-testid="stBaseButton-secondary"],
+        button[data-testid="stBaseButton-primary"] {
+            width: 100% !important;
+            min-height: 84px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            border-radius: 12px !important;
+        }
+
+        div[data-testid="stButton"] > button > div,
+        div[data-testid="stButton"] > button p,
+        button[data-testid="stBaseButton-secondary"] p,
+        button[data-testid="stBaseButton-primary"] p {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            text-align: center !important;
+            justify-content: center !important;
+            align-items: center !important;
+            font-size: 20px !important;
+            font-weight: 600 !important;
+            line-height: 1.5 !important;
         }
         </style>
         """,
@@ -56,142 +64,39 @@ def show_dashboard(language):
 
     st.divider()
 
-    # ==========================================
-    # MAIN ERP MODULES
-    # ==========================================
+    cards = [
+        ("🏢", t("companies_branches", language), "companies_branches"),
+        ("📦", t("inventory_warehouses", language), "inventory"),
+        ("💰", t("finance_accounting", language), "accounting"),
+        ("🛒", t("sales", language), "sales"),
+        ("🧾", t("purchasing", language), "purchasing"),
+        ("🏪", t("pos", language), "pos"),
+        ("🏭", t("manufacturing", language), "manufacturing"),
+        ("🚢", t("import_export", language), "import_export"),
+        ("👥", t("crm", language), "crm"),
+        ("🏷️", t("assets", language), "assets"),
+        ("👨‍💼", t("hr_payroll", language), "hr"),
+        ("🤝", t("partners_equity", language), "partners"),
+    ]
 
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        _module_button(
-            t("companies_branches", language),
-            "🏢",
-            "companies_branches",
-            "dash_companies"
-        )
-
-    with col2:
-        _module_button(
-            t("inventory_warehouses", language),
-            "📦",
-            "inventory",
-            "dash_inventory"
-        )
-
-    with col3:
-        _module_button(
-            t("finance_accounting", language),
-            "💰",
-            "accounting",
-            "dash_accounting"
-        )
-
-    col4, col5, col6 = st.columns(3)
-
-    with col4:
-        _module_button(
-            t("sales", language),
-            "🛒",
-            "sales",
-            "dash_sales"
-        )
-
-    with col5:
-        _module_button(
-            t("purchasing", language),
-            "🧾",
-            "purchasing",
-            "dash_purchasing"
-        )
-
-    with col6:
-        _module_button(
-            t("pos", language),
-            "🏪",
-            "pos",
-            "dash_pos"
-        )
-
-    col7, col8, col9 = st.columns(3)
-
-    with col7:
-        _module_button(
-            t("manufacturing", language),
-            "🏭",
-            "manufacturing",
-            "dash_manufacturing"
-        )
-
-    with col8:
-        _module_button(
-            t("import_export", language),
-            "🚢",
-            "import_export",
-            "dash_import_export"
-        )
-
-    with col9:
-        _module_button(
-            t("crm", language),
-            "👥",
-            "crm",
-            "dash_crm"
-        )
-
-    col10, col11, col12 = st.columns(3)
-
-    with col10:
-        _module_button(
-            t("assets", language),
-            "🏷️",
-            "assets",
-            "dash_assets"
-        )
-
-    with col11:
-        _module_button(
-            t("hr_payroll", language),
-            "👨‍💼",
-            "hr",
-            "dash_hr"
-        )
-
-    with col12:
-        _module_button(
-            t("partners_equity", language),
-            "🤝",
-            "partners",
-            "dash_partners"
-        )
-
-    # ==========================================
-    # ADMINISTRATION
-    # ==========================================
+    for row in range(0, len(cards), 3):
+        cols = st.columns(3)
+        for i, col in enumerate(cols):
+            idx = row + i
+            if idx < len(cards):
+                icon, label, page = cards[idx]
+                with col:
+                    _card(label, icon, page, f"dashboard_{page}")
 
     st.divider()
 
-    col13, col14, col15 = st.columns(3)
+    admin_cards = [
+        ("📊", t("reports", language), "reports"),
+        ("🔐", t("users_permissions", language), "users"),
+        ("⚙️", t("settings", language), "settings"),
+    ]
 
-    with col13:
-        _module_button(
-            t("reports", language),
-            "📊",
-            "reports",
-            "dash_reports"
-        )
-
-    with col14:
-        _module_button(
-            t("users_permissions", language),
-            "🔐",
-            "users",
-            "dash_users"
-        )
-
-    with col15:
-        _module_button(
-            t("settings", language),
-            "⚙️",
-            "settings",
-            "dash_settings"
-        )
+    cols = st.columns(3)
+    for col, (icon, label, page) in zip(cols, admin_cards):
+        with col:
+            _card(label, icon, page, f"dashboard_{page}")

@@ -2,6 +2,7 @@ import streamlit as st
 
 from translations import t
 from modules.dashboard import show_dashboard
+from modules.companies import show_companies
 from ui.navigation import show_navigation
 
 
@@ -130,6 +131,10 @@ else:
     if selected_page == "dashboard":
 
         show_dashboard(language)
+
+    elif selected_page == "companies_branches":
+
+        show_companies(language)
 
     else:
 

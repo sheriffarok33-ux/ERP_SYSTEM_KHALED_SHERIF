@@ -4,6 +4,7 @@ from translations import t
 from modules.dashboard import show_dashboard
 from modules.companies import show_companies
 from ui.navigation import show_navigation
+from core.database import initialize_database, database_health_check
 
 
 # ==========================================
@@ -17,6 +18,35 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+
+# ==========================================
+# DATABASE INITIALIZATION
+# ==========================================
+
+try:
+    initialize_database()
+    database_ready = database_health_check()
+
+except Exception as error:
+    database_ready = False
+    database_error = str(error)
+
+
+# ==========================================
+# DATABASE ERROR
+# ==========================================
+
+if not database_ready:
+
+    st.error(
+        "Database initialization failed. / فشل تشغيل قاعدة البيانات."
+    )
+
+    if "database_error" in globals():
+        st.code(database_error)
+
+    st.stop()
 
 
 # ==========================================
@@ -83,7 +113,9 @@ if not st.session_state.logged_in:
         ):
 
             # TEMPORARY LOGIN
-            # Later this will use PostgreSQL + hashed passwords
+            # Later this will be replaced with
+            # database users + hashed passwords
+
             if username == "admin" and password == "admin123":
 
                 st.session_state.logged_in = True
@@ -102,9 +134,12 @@ if not st.session_state.logged_in:
         st.markdown(
             f"""
             <div style="text-align:center; font-size:13px; line-height:1.8;">
-                {t("supervised_by", language)}: Mr. Khaled Al-Fitouri
+                {t("supervised_by", language)}:
+                Mr. Khaled Al-Fitouri
                 <br>
-                {t("developed_by", language)}: Eng. Sherif M. Farok
+
+                {t("developed_by", language)}:
+                Eng. Sherif M. Farok
             </div>
             """,
             unsafe_allow_html=True
@@ -143,9 +178,16 @@ else:
         )
 
         if language == "العربية":
-            st.info("هذه الشاشة قيد التطوير.")
+
+            st.info(
+                "هذه الشاشة قيد التطوير."
+            )
+
         else:
-            st.info("This screen is under development.")
+
+            st.info(
+                "This screen is under development."
+            )
 
 
     # ======================================

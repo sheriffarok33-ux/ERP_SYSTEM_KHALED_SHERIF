@@ -1,61 +1,18 @@
 import streamlit as st
-from modules.review_helpers import review_header, status_box
 
-FIELDS = ['كود المركز|Center Code', 'اسم المركز|Center Name', 'الشركة|Company', 'الفرع|Branch', 'المركز الأب|Parent Center', 'الحالة|Status']
+SECTIONS=['شجرة مراكز التكلفة|Cost Center Tree', 'ربط الفروع|Branch Assignment', 'ربط الحسابات|Account Assignment', 'تقارير المراكز|Cost Center Reports']
 
 def show_cost_centers(language):
-    ar = review_header(
-        language, "🎯", "مراكز التكلفة", "Cost Centers",
-        "تعريف مراكز التكلفة وربطها بالشركات والفروع.", "Define cost centers and assign them to companies and branches"
-    )
-    status_box(ar)
-    st.divider()
-
-    tab1, tab2, tab3 = st.tabs(
-        ["➕ إدخال / تعريف", "📋 السجلات", "⚙️ خيارات"]
-        if ar else
-        ["➕ Create / Define", "📋 Records", "⚙️ Options"]
-    )
-
-    with tab1:
-        st.subheader("البيانات الأساسية" if ar else "Basic Information")
-        for i in range(0, len(FIELDS), 2):
-            cols = st.columns(2)
-            for j, col in enumerate(cols):
-                idx = i + j
-                if idx < len(FIELDS):
-                    ar_label, en_label = FIELDS[idx].split("|")
-                    with col:
-                        st.text_input(
-                            ar_label if ar else en_label,
-                            key=f"show_cost_centers_field_{idx}"
-                        )
-
-        st.text_area(
-            "ملاحظات" if ar else "Notes",
-            key="show_cost_centers_notes"
-        )
-        st.button(
-            "💾 حفظ (نسخة المراجعة)" if ar else "💾 Save (Review Version)",
-            key="show_cost_centers_save",
-            type="primary",
-            use_container_width=True
-        )
-
-    with tab2:
-        st.subheader("السجلات" if ar else "Records")
-        st.text_input(
-            "🔎 بحث" if ar else "🔎 Search",
-            key="show_cost_centers_search"
-        )
-        st.info(
-            "سيظهر هنا جدول السجلات بعد اعتماد الشاشة وربط قاعدة البيانات."
-            if ar else
-            "Records will appear here after screen approval and database integration."
-        )
-
-    with tab3:
-        st.subheader("خيارات الشاشة" if ar else "Screen Options")
-        st.checkbox("السماح بالتعديل" if ar else "Allow Editing", value=True, key="show_cost_centers_edit")
-        st.checkbox("السماح بالحذف" if ar else "Allow Deletion", value=False, key="show_cost_centers_delete")
-        st.checkbox("تسجيل العمليات في سجل المراجعة" if ar else "Write actions to Audit Log", value=True, key="show_cost_centers_audit")
+    ar=language=="العربية"
+    st.title("🎯 " + ("مراكز التكلفة" if ar else "Cost Centers"))
+    labels=[x.split("|")[0] if ar else x.split("|")[1] for x in SECTIONS]
+    tabs=st.tabs(labels)
+    for i,tab in enumerate(tabs):
+        with tab:
+            st.subheader(labels[i])
+            c1,c2=st.columns(2)
+            c1.text_input("الكود / الرقم" if ar else "Code / Number", key="show_cost_centers_code_"+str(i))
+            c2.text_input("الاسم / المرجع" if ar else "Name / Reference", key="show_cost_centers_name_"+str(i))
+            st.text_area("البيانات / الملاحظات" if ar else "Details / Notes", key="show_cost_centers_details_"+str(i))
+            st.data_editor([], num_rows="dynamic", use_container_width=True, key="show_cost_centers_grid_"+str(i))
+            st.button("💾 حفظ" if ar else "💾 Save", key="show_cost_centers_save_"+str(i), type="primary")

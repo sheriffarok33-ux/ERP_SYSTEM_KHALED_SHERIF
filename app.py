@@ -2,6 +2,7 @@ import streamlit as st
 
 from translations import t
 from modules.dashboard import show_dashboard
+from ui.navigation import show_navigation
 
 
 # ==========================================
@@ -13,7 +14,7 @@ st.set_page_config(
     page_title="ERP System",
     page_icon="🏢",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="expanded"
 )
 
 
@@ -27,9 +28,12 @@ if "language" not in st.session_state:
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+if "username" not in st.session_state:
+    st.session_state.username = None
+
 
 # ==========================================
-# LANGUAGE SELECTOR
+# LANGUAGE
 # ==========================================
 
 language = st.selectbox(
@@ -54,20 +58,12 @@ if not st.session_state.logged_in:
     with center:
 
         st.markdown(
-            f"""
-            <h1 style="text-align:center;">
-                {t("system_name", language)}
-            </h1>
-            """,
+            f"<h1 style='text-align:center;'>{t('system_name', language)}</h1>",
             unsafe_allow_html=True
         )
 
         st.markdown(
-            f"""
-            <h4 style="text-align:center;">
-                {t("system_description", language)}
-            </h4>
-            """,
+            f"<h4 style='text-align:center;'>{t('system_description', language)}</h4>",
             unsafe_allow_html=True
         )
 
@@ -80,18 +76,13 @@ if not st.session_state.logged_in:
             type="password"
         )
 
-        login_button = st.button(
+        if st.button(
             t("login", language),
             use_container_width=True
-        )
+        ):
 
-        if login_button:
-
-            # ==================================
-            # TEMPORARY DEVELOPMENT LOGIN
-            # Will be replaced by database users
-            # ==================================
-
+            # TEMPORARY LOGIN
+            # Later this will use PostgreSQL + hashed passwords
             if username == "admin" and password == "admin123":
 
                 st.session_state.logged_in = True
@@ -109,17 +100,10 @@ if not st.session_state.logged_in:
 
         st.markdown(
             f"""
-            <div style="
-                text-align:center;
-                font-size:13px;
-                line-height:1.8;
-            ">
-                {t("supervised_by", language)}:
-                Mr. Khaled Al-Fitouri
+            <div style="text-align:center; font-size:13px; line-height:1.8;">
+                {t("supervised_by", language)}: Mr. Khaled Al-Fitouri
                 <br>
-
-                {t("developed_by", language)}:
-                Eng. Sherif M. Farok
+                {t("developed_by", language)}: Eng. Sherif M. Farok
             </div>
             """,
             unsafe_allow_html=True
@@ -132,25 +116,51 @@ if not st.session_state.logged_in:
 
 else:
 
-    # --------------------------------------
-    # Load Dashboard
-    # --------------------------------------
+    # ======================================
+    # NAVIGATION
+    # ======================================
 
-    show_dashboard(language)
+    selected_page = show_navigation(language)
 
-    st.divider()
 
-    # --------------------------------------
-    # Logout
-    # --------------------------------------
+    # ======================================
+    # SCREEN ROUTER
+    # ======================================
 
-    if st.button(
-        t("logout", language)
-    ):
+    if selected_page == "dashboard":
 
-        st.session_state.logged_in = False
+        show_dashboard(language)
 
-        if "username" in st.session_state:
-            del st.session_state.username
+    else:
 
-        st.rerun()
+        st.title(
+            t(selected_page, language)
+        )
+
+        if language == "العربية":
+            st.info("هذه الشاشة قيد التطوير.")
+        else:
+            st.info("This screen is under development.")
+
+
+    # ======================================
+    # SIDEBAR USER INFORMATION
+    # ======================================
+
+    with st.sidebar:
+
+        st.divider()
+
+        st.caption(
+            f"User: {st.session_state.username}"
+        )
+
+        if st.button(
+            t("logout", language),
+            use_container_width=True
+        ):
+
+            st.session_state.logged_in = False
+            st.session_state.username = None
+
+            st.rerun()

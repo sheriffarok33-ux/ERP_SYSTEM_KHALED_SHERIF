@@ -24,9 +24,13 @@ from modules.ask_ai import show_ask_ai
 from modules.users import show_users
 from modules.settings import show_settings
 from ui.navigation import show_navigation
+from ui.theme import init_theme, apply_theme
 from core.database import initialize_database, database_health_check
 
 st.set_page_config(page_title="ERP System", page_icon="🏢", layout="wide", initial_sidebar_state="expanded")
+
+init_theme()
+apply_theme()
 
 try:
     initialize_database()
@@ -49,8 +53,9 @@ if "username" not in st.session_state:
     st.session_state.username = None
 
 language = st.selectbox(
-    "Language / اللغة", ["English", "العربية"],
-    index=0 if st.session_state.language == "English" else 1
+    "Language / اللغة",
+    ["English", "العربية"],
+    index=0 if st.session_state.language == "English" else 1,
 )
 st.session_state.language = language
 
@@ -75,7 +80,7 @@ if not st.session_state.logged_in:
             {t("supervised_by", language)}: Mr. Khaled Al-Fitouri<br>
             {t("developed_by", language)}: Eng. Sherif M. Farok
             </div>""",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 else:
     selected_page = show_navigation(language)

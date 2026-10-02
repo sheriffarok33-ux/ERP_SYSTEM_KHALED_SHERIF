@@ -816,3 +816,15 @@ def show_companies(language):
                                 )
 
                                 st.rerun()
+
+        except Exception as error:
+
+            st.error(
+                "حدث خطأ أثناء تحميل الشركات المسجلة."
+                if ar
+                else
+                "An error occurred while loading registered companies."
+            )
+
+            st.code(str(error))
+

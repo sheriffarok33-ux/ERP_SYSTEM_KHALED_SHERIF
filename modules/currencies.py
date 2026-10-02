@@ -1,12 +1,12 @@
 import streamlit as st
 from modules.review_helpers import review_header, status_box
 
-FIELDS = ['رقم الفاتورة|Invoice No.', 'العميل|Customer', 'الباركود|Barcode', 'الصنف|Item', 'الكمية|Quantity', 'السعر|Price', 'طريقة الدفع|Payment Method', 'الكاشير|Cashier']
+FIELDS = ['كود العملة|Currency Code', 'اسم العملة|Currency Name', 'الرمز|Symbol', 'سعر الصرف|Exchange Rate', 'تاريخ السعر|Rate Date', 'العملة الأساسية|Base Currency']
 
-def show_pos(language):
+def show_currencies(language):
     ar = review_header(
-        language, "🏪", "نقاط البيع", "Point of Sale",
-        "واجهة بيع سريعة للنقدي والبطاقات مع إدارة الورديات.", "Fast cash/card sales interface with shift management"
+        language, "💱", "العملات وأسعار الصرف", "Currencies & Exchange Rates",
+        "تعريف العملات وأسعار الصرف والعملات الأساسية.", "Manage currencies, base currencies and exchange rates"
     )
     status_box(ar)
     st.divider()
@@ -28,16 +28,16 @@ def show_pos(language):
                     with col:
                         st.text_input(
                             ar_label if ar else en_label,
-                            key=f"show_pos_field_{idx}"
+                            key=f"show_currencies_field_{idx}"
                         )
 
         st.text_area(
             "ملاحظات" if ar else "Notes",
-            key="show_pos_notes"
+            key="show_currencies_notes"
         )
         st.button(
             "💾 حفظ (نسخة المراجعة)" if ar else "💾 Save (Review Version)",
-            key="show_pos_save",
+            key="show_currencies_save",
             type="primary",
             use_container_width=True
         )
@@ -46,7 +46,7 @@ def show_pos(language):
         st.subheader("السجلات" if ar else "Records")
         st.text_input(
             "🔎 بحث" if ar else "🔎 Search",
-            key="show_pos_search"
+            key="show_currencies_search"
         )
         st.info(
             "سيظهر هنا جدول السجلات بعد اعتماد الشاشة وربط قاعدة البيانات."
@@ -56,6 +56,6 @@ def show_pos(language):
 
     with tab3:
         st.subheader("خيارات الشاشة" if ar else "Screen Options")
-        st.checkbox("السماح بالتعديل" if ar else "Allow Editing", value=True, key="show_pos_edit")
-        st.checkbox("السماح بالحذف" if ar else "Allow Deletion", value=False, key="show_pos_delete")
-        st.checkbox("تسجيل العمليات في سجل المراجعة" if ar else "Write actions to Audit Log", value=True, key="show_pos_audit")
+        st.checkbox("السماح بالتعديل" if ar else "Allow Editing", value=True, key="show_currencies_edit")
+        st.checkbox("السماح بالحذف" if ar else "Allow Deletion", value=False, key="show_currencies_delete")
+        st.checkbox("تسجيل العمليات في سجل المراجعة" if ar else "Write actions to Audit Log", value=True, key="show_currencies_audit")

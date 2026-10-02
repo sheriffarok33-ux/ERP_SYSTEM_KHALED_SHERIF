@@ -35,5 +35,34 @@ def show_navigation(language):
         labels = [f"{icon} {ar_name if ar else en_name}"
                   for key, icon, ar_name, en_name in menu_options]
 
-        selected = st.radio("Navigation", labels, label_visibility="collapsed")
-        return menu_options[labels.index(selected)][0]
+        # Dashboard buttons can request a destination page.
+        requested_page = st.session_state.pop("requested_page", None)
+
+        keys = [item[0] for item in menu_options]
+
+        if "navigation_page" not in st.session_state:
+            st.session_state["navigation_page"] = "dashboard"
+
+        if requested_page in keys:
+            st.session_state["navigation_page"] = requested_page
+
+        current_page = st.session_state["navigation_page"]
+
+        if current_page not in keys:
+            current_page = "dashboard"
+            st.session_state["navigation_page"] = current_page
+
+        current_index = keys.index(current_page)
+
+        selected = st.radio(
+            "Navigation",
+            labels,
+            index=current_index,
+            label_visibility="collapsed",
+            key="main_navigation_radio"
+        )
+
+        selected_page = menu_options[labels.index(selected)][0]
+        st.session_state["navigation_page"] = selected_page
+
+        return selected_page

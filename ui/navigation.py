@@ -25,14 +25,30 @@ def show_navigation(language):
             ("hr_payroll", "👨‍💼"),
             ("partners_equity", "🤝"),
             ("reports", "📊"),
+            ("ask_ai", "🤖"),
             ("users_permissions", "🔐"),
             ("settings", "⚙️"),
         ]
 
-        labels = [
-            f"{icon} {t(key, language)}"
-            for key, icon in menu_options
-        ]
+        labels = []
+
+        for key, icon in menu_options:
+
+            if key == "ask_ai":
+
+                label = (
+                    "اسأل الذكاء الاصطناعي"
+                    if language == "العربية"
+                    else "Ask AI"
+                )
+
+            else:
+
+                label = t(key, language)
+
+            labels.append(
+                f"{icon} {label}"
+            )
 
         selected_label = st.radio(
             "Navigation",
@@ -40,8 +56,12 @@ def show_navigation(language):
             label_visibility="collapsed"
         )
 
-        selected_index = labels.index(selected_label)
+        selected_index = labels.index(
+            selected_label
+        )
 
-        selected_page = menu_options[selected_index][0]
+        selected_page = menu_options[
+            selected_index
+        ][0]
 
         return selected_page
